@@ -1,0 +1,280 @@
+type UserProfile = 
+ record {
+   created_at: Timestamp;
+   email: opt text;
+   principal_id: UserId;
+   role: Role;
+   updated_at: Timestamp;
+ };
+type UserId = text;
+type Timestamp = nat64;
+type Role = 
+ variant {
+   admin;
+   user;
+ };
+type RetroSessionStatus = 
+ variant {
+   active;
+   completed;
+ };
+type RetroSession = 
+ record {
+   candidate_activities: vec RDActivity;
+   conversation: vec ConversationEntry;
+   created_at: Timestamp;
+   id: EntityId;
+   status: RetroSessionStatus;
+   time_range_end: text;
+   time_range_start: text;
+   updated_at: Timestamp;
+   user_principal: UserId;
+ };
+type ReportScope = 
+ variant {
+   global;
+   user;
+ };
+type Report = 
+ record {
+   activity_ids: vec EntityId;
+   breakdown_borderline: nat;
+   breakdown_eligible: nat;
+   breakdown_ineligible: nat;
+   eligible_hours: float64;
+   estimated_qre_value: float64;
+   generated_at: Timestamp;
+   id: EntityId;
+   period_end: text;
+   period_start: text;
+   scope: ReportScope;
+   total_hours: float64;
+ };
+type Recommendation = 
+ variant {
+   approve;
+   more_info;
+   reject;
+ };
+type RNDProgram = 
+ record {
+   created_at: Timestamp;
+   description: text;
+   id: EntityId;
+   irc_section: text;
+   name: text;
+   status: ProgramStatus;
+   updated_at: Timestamp;
+ };
+type RDActivity = 
+ record {
+   activity_type: ActivityType;
+   admin_notes: opt text;
+   agent_reasoning: text;
+   content_hash: text;
+   created_at: Timestamp;
+   description: text;
+   eligibility_label: EligibilityLabel;
+   eligibility_score: float64;
+   end_date: opt text;
+   four_part_test_result: FourPartTestResult;
+   hours_spent: float64;
+   id: EntityId;
+   program_id: opt EntityId;
+   quantum_adjusted_score: float64;
+   start_date: text;
+   status: ActivityStatus;
+   tags: vec text;
+   title: text;
+   updated_at: Timestamp;
+   user_principal: UserId;
+ };
+type ProgramStatus = 
+ variant {
+   active;
+   inactive;
+ };
+type MetricEntry = 
+ record {
+   name: text;
+   value: text;
+ };
+type GlobalStats = 
+ record {
+   global_qre_value: float64;
+   pending_enrollments: nat;
+   submitted_activities: nat;
+   total_approved_hours: float64;
+   total_programs: nat;
+   total_users: nat;
+ };
+type FourPartTestResult = 
+ record {
+   elimination_of_uncertainty: bool;
+   notes: text;
+   permitted_purpose: bool;
+   process_of_experimentation: bool;
+   technological_in_nature: bool;
+ };
+type ExperimentOutcome = 
+ variant {
+   failure;
+   inconclusive;
+   success;
+ };
+type Experiment = 
+ record {
+   created_at: Timestamp;
+   hypothesis: text;
+   id: EntityId;
+   linked_activity_id: opt EntityId;
+   method: text;
+   metrics: vec MetricEntry;
+   outcome: ExperimentOutcome;
+   program_id: opt EntityId;
+   results_summary: text;
+   updated_at: Timestamp;
+   user_principal: UserId;
+ };
+type EntityId = text;
+type EnrollmentStatus = 
+ variant {
+   approved;
+   pending;
+   rejected;
+ };
+type Enrollment = 
+ record {
+   enrolled_at: Timestamp;
+   id: EntityId;
+   program_id: EntityId;
+   review_notes: opt text;
+   reviewed_at: opt Timestamp;
+   reviewed_by: opt UserId;
+   status: EnrollmentStatus;
+   user_principal: UserId;
+ };
+type EligibilityLabel = 
+ variant {
+   borderline;
+   eligible;
+   ineligible;
+ };
+type CreateRetroSessionInput = 
+ record {
+   time_range_end: text;
+   time_range_start: text;
+ };
+type CreateExperimentInput = 
+ record {
+   hypothesis: text;
+   linked_activity_id: opt EntityId;
+   method: text;
+   metrics: vec MetricEntry;
+   outcome: ExperimentOutcome;
+   program_id: opt EntityId;
+   results_summary: text;
+ };
+type CreateActivityResult = 
+ record {
+   activity: RDActivity;
+   classification: ClassificationResult;
+ };
+type CreateActivityInput = 
+ record {
+   activity_type: ActivityType;
+   description: text;
+   end_date: opt text;
+   hours_spent: float64;
+   program_id: opt EntityId;
+   start_date: text;
+   tags: vec text;
+   title: text;
+ };
+type ConversationEntry = 
+ record {
+   content: text;
+   role: text;
+   timestamp: Timestamp;
+ };
+type ClassificationResult = 
+ record {
+   admin_suggestion: AdminSuggestion;
+   agent_reasoning: text;
+   eligibility_label: EligibilityLabel;
+   eligibility_score: float64;
+   four_part_test: FourPartTestResult;
+   quantum_adjusted_score: float64;
+   suggested_tags: vec text;
+ };
+type AuditEntry = 
+ record {
+   action: text;
+   actor_principal: UserId;
+   entity_id: EntityId;
+   entity_type: text;
+   id: EntityId;
+   timestamp: Timestamp;
+ };
+type AdminSuggestion = 
+ record {
+   confidence: nat;
+   notes: text;
+   recommendation: Recommendation;
+ };
+type AddRetroMessageInput = 
+ record {
+   content: text;
+   role: text;
+   session_id: EntityId;
+ };
+type ActivityType = 
+ variant {
+   ongoing;
+   retroactive;
+ };
+type ActivityStatus = 
+ variant {
+   approved;
+   draft;
+   rejected;
+   submitted;
+ };
+service : {
+  add_retro_message: (input: AddRetroMessageInput) -> (RetroSession);
+  admin_create_program: (name: text, description: text, irc_section:
+   opt text) -> (RNDProgram);
+  admin_list_activities: (user_principal_filter: opt UserId, status_filter:
+   opt ActivityStatus, program_id_filter: opt EntityId) ->
+   (vec RDActivity) query;
+  admin_list_enrollments: (status_filter: opt EnrollmentStatus) ->
+   (vec Enrollment) query;
+  admin_list_users: () -> (vec UserProfile) query;
+  admin_review_activity: (id: EntityId, decision: ActivityStatus, notes:
+   opt text) -> (RDActivity);
+  admin_review_enrollment: (id: EntityId, decision: EnrollmentStatus, notes:
+   opt text) -> (Enrollment);
+  admin_set_user_role: (target_principal: UserId, role: Role) ->
+   (UserProfile);
+  complete_retro_session: (session_id: EntityId) -> (RetroSession);
+  create_activity: (input: CreateActivityInput) -> (CreateActivityResult);
+  create_experiment: (input: CreateExperimentInput) -> (Experiment);
+  enroll_in_program: (program_id: EntityId) -> (Enrollment);
+  export_report_csv: (report_id: EntityId) -> (text) query;
+  generate_global_report: (period_start: text, period_end: text) -> (Report);
+  generate_user_report: (user_principal: UserId, period_start: text,
+   period_end: text) -> (Report);
+  get_audit_trail: (entity_id: EntityId, limit: nat) ->
+   (vec AuditEntry) query;
+  get_global_stats: () -> (GlobalStats) query;
+  get_my_profile: () -> (UserProfile) query;
+  list_my_activities: (status_filter: opt ActivityStatus, program_id_filter:
+   opt EntityId) -> (vec RDActivity) query;
+  list_my_experiments: () -> (vec Experiment) query;
+  list_programs: () -> (vec RNDProgram) query;
+  list_retro_sessions: () -> (vec RetroSession) query;
+  start_retro_session: (input: CreateRetroSessionInput) -> (RetroSession);
+  update_experiment: (id: EntityId, input: CreateExperimentInput) ->
+   (Experiment);
+  upsert_profile: (email: opt text) -> (UserProfile);
+}

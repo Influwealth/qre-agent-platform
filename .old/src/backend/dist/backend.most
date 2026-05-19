@@ -1,0 +1,178 @@
+// Version: 1.0.0
+type ActivityStatus__304162745 = {#approved; #draft; #rejected; #submitted};
+type ActivityType__1033789510 = {#ongoing; #retroactive};
+type AuditEntry__60967837 =
+  {
+    action : Text;
+    actor_principal : UserId__158757552;
+    entity_id : EntityId__892221652;
+    entity_type : Text;
+    id : EntityId__892221652;
+    timestamp : Timestamp__301639476
+  };
+type ConversationEntry__45326750 =
+  {content : Text; role : Text; timestamp : Timestamp__301639476};
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type EligibilityLabel__213207879 = {#borderline; #eligible; #ineligible};
+type EnrollmentStatus__698727514 = {#approved; #pending; #rejected};
+type Enrollment__336309244 =
+  {
+    enrolled_at : Timestamp__301639476;
+    id : EntityId__892221652;
+    program_id : EntityId__892221652;
+    review_notes : ?Text;
+    reviewed_at : ?Timestamp__301639476;
+    reviewed_by : ?UserId__158757552;
+    status : EnrollmentStatus__698727514;
+    user_principal : UserId__158757552
+  };
+type EntityId__892221652 = Text;
+type ExperimentOutcome__919501145 = {#failure; #inconclusive; #success};
+type Experiment__80697101 =
+  {
+    created_at : Timestamp__301639476;
+    hypothesis : Text;
+    id : EntityId__892221652;
+    linked_activity_id : ?EntityId__892221652;
+    method : Text;
+    metrics : [MetricEntry__495651409];
+    outcome : ExperimentOutcome__919501145;
+    program_id : ?EntityId__892221652;
+    results_summary : Text;
+    updated_at : Timestamp__301639476;
+    user_principal : UserId__158757552
+  };
+type FourPartTestResult__987205045 =
+  {
+    elimination_of_uncertainty : Bool;
+    notes : Text;
+    permitted_purpose : Bool;
+    process_of_experimentation : Bool;
+    technological_in_nature : Bool
+  };
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type MetricEntry__495651409 = {name : Text; value : Text};
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type ProgramStatus__797340934 = {#active; #inactive};
+type RDActivity__475543647 =
+  {
+    activity_type : ActivityType__1033789510;
+    admin_notes : ?Text;
+    agent_reasoning : Text;
+    content_hash : Text;
+    created_at : Timestamp__301639476;
+    description : Text;
+    eligibility_label : EligibilityLabel__213207879;
+    eligibility_score : Float;
+    end_date : ?Text;
+    four_part_test_result : FourPartTestResult__987205045;
+    hours_spent : Float;
+    id : EntityId__892221652;
+    program_id : ?EntityId__892221652;
+    quantum_adjusted_score : Float;
+    start_date : Text;
+    status : ActivityStatus__304162745;
+    tags : [Text];
+    title : Text;
+    updated_at : Timestamp__301639476;
+    user_principal : UserId__158757552
+  };
+type RNDProgram__745832028 =
+  {
+    created_at : Timestamp__301639476;
+    description : Text;
+    id : EntityId__892221652;
+    irc_section : Text;
+    name : Text;
+    status : ProgramStatus__797340934;
+    updated_at : Timestamp__301639476
+  };
+type ReportScope__962033627 = {#global; #user};
+type Report__953667835 =
+  {
+    activity_ids : [EntityId__892221652];
+    breakdown_borderline : Nat;
+    breakdown_eligible : Nat;
+    breakdown_ineligible : Nat;
+    eligible_hours : Float;
+    estimated_qre_value : Float;
+    generated_at : Timestamp__301639476;
+    id : EntityId__892221652;
+    period_end : Text;
+    period_start : Text;
+    scope : ReportScope__962033627;
+    total_hours : Float
+  };
+type RetroSessionStatus__819207618 = {#active; #completed};
+type RetroSession__736846772 =
+  {
+    candidate_activities : [RDActivity__475543647];
+    conversation : [ConversationEntry__45326750];
+    created_at : Timestamp__301639476;
+    id : EntityId__892221652;
+    status : RetroSessionStatus__819207618;
+    time_range_end : Text;
+    time_range_start : Text;
+    updated_at : Timestamp__301639476;
+    user_principal : UserId__158757552
+  };
+type Role__300349085 = {#admin; #user};
+type Timestamp__301639476 = Nat64;
+type UserId__158757552 = Text;
+type UserProfile__190304746 =
+  {
+    created_at : Timestamp__301639476;
+    email : ?Text;
+    principal_id : UserId__158757552;
+    role : Role__300349085;
+    updated_at : Timestamp__301639476
+  };
+actor {
+  stable activities :
+    {
+      var root : Node__46230540<EntityId__892221652, RDActivity__475543647>;
+      var size : Nat__490723111
+    };
+  stable audit_entries :
+    {
+      var root : Node__46230540<EntityId__892221652, AuditEntry__60967837>;
+      var size : Nat__490723111
+    };
+  stable enrollments :
+    {
+      var root : Node__46230540<EntityId__892221652, Enrollment__336309244>;
+      var size : Nat__490723111
+    };
+  stable experiments :
+    {
+      var root : Node__46230540<EntityId__892221652, Experiment__80697101>;
+      var size : Nat__490723111
+    };
+  stable programs :
+    {
+      var root : Node__46230540<EntityId__892221652, RNDProgram__745832028>;
+      var size : Nat__490723111
+    };
+  stable reports :
+    {
+      var root : Node__46230540<EntityId__892221652, Report__953667835>;
+      var size : Nat__490723111
+    };
+  stable retro_sessions :
+    {
+      var root : Node__46230540<EntityId__892221652, RetroSession__736846772>;
+      var size : Nat__490723111
+    };
+  stable state : {var next_id : Nat};
+  stable users :
+    {
+      var root : Node__46230540<UserId__158757552, UserProfile__190304746>;
+      var size : Nat__490723111
+    }
+};

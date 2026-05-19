@@ -1,0 +1,28 @@
+{
+  "overview": "QRE-Agent Platform v1.0 — Sovereign R&D Tax Credit Tracking System for InfluWealth Consult LLC. Tracks, classifies, and reports R&D activities for IRC §41 tax credit eligibility on the Internet Computer. Features deterministic keyword-based scoring, retroactive capture, admin approval workflows, and compliance-ready export.",
+  "features": [
+    "IRC §41 deterministic classification engine with four-part test scoring",
+    "Retroactive R&D capture with guided chat UI",
+    "Activity logging with quantum-adjusted eligibility scoring",
+    "Admin approval workflow with full classification detail panel",
+    "Experiments tracking linked to activities",
+    "User and global QRE value reports with CSV export",
+    "Internet Identity passwordless authentication",
+    "Role-based dashboards (Contributor and Admin)",
+    "Audit trail for all state mutations",
+    "Stable memory persistence across canister upgrades"
+  ],
+  "category": "productivity",
+  "tags": [
+    "r-d-tax-credit",
+    "irc-41",
+    "qre",
+    "internet-computer",
+    "icp",
+    "motoko",
+    "admin-workflow",
+    "compliance",
+    "influwealth"
+  ],
+  "last_updated": "2026-05-12T16:20:22.246Z"
+}
